@@ -25,15 +25,13 @@ class Explorer:
 
         self.setup()
 
-    def setup(self):
+    def setup(self) -> None:
         self.get_tags()
         self.clean_tags()
         self.selected_tag = self.random_selection(self.tags)
         self.get_random_artist(self.selected_tag)
         self.get_random_album()
         self.get_random_track()
-        print(self.track['track_url'])
-        self.play()
 
     def get_tags(self) -> bool:
         tags: List[str] = []
