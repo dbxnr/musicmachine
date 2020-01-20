@@ -7,12 +7,11 @@ name = "pypi"
 beautifulsoup4 = "*"
 requests = "*"
 toml = "*"
-mypy = "*"
 lxml = "*"
-PyAudio = "*"
 miniaudio = "*"
 
 [dev-packages]
+mypy = "*"
 
 [requires]
 python_version = "3.8"
