@@ -20,6 +20,7 @@ class Player:
                                       sample_rate=sample_rate)
         device = miniaudio.PlaybackDevice()
         device.start(stream)
+        # Crossfade here possibly?
         time.sleep(self.duration+1)
         device.close()
         return True

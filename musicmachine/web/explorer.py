@@ -64,7 +64,6 @@ class Explorer:
         Handler for some bad data that could be
         removed earlier in the pipeline.
         """
-        # Add a check for Christmas period, exclude tag based on that
         try:
             self.tags.remove('view-all')
             self.tags.remove('')
@@ -75,7 +74,8 @@ class Explorer:
             return False
 
     def get_random_artist(self, tag) -> Union[bool, Callable]:
-        page: int = random.randint(1, 25)
+        # This could be a user param, popularity range(x,y)
+        page: int = random.randint(1, 45)
         body: str = '"tags":["' + tag + '"]},"page":' + str(page) + '}'
 
         r = requests.post(url=self.config['DIG_DEEPER'],
@@ -105,8 +105,9 @@ class Explorer:
             self.album['album_url'] = self.artist['band_url'] + self.random_selection(albums)
             return True
         else:
+            # Pretty serious bug, needs to be investigate
             print(f"Perusing back catalogues of {self.artist['band_url']}...")
-            return self.get_random_album()
+            return self.setup()
 
     def get_random_track(self) -> Union[bool, callable]:
         # This could be refactored out, a random media url
@@ -143,6 +144,11 @@ class Explorer:
         script = s.find('script', type='text/javascript').get_text()
 
         # Kind of hacky, regex could be improved
-        self.track['media_url'] = re.search(r'(?:"mp3-128":).[^"]+', script).group()[11:]
-        self.track['duration'] = float(re.search(r'(?:"duration":).[^,]+', script).group()[11:])
+        try:
+            self.track['media_url'] = re.search(r'(?:"mp3-128":).[^"]+', script).group()[11:]
+            self.track['duration'] = float(re.search(r'(?:"duration":).[^,]+', script).group()[11:])
+        except Exception as e:
+            print(e)
+            return self.setup()
+
         return True
