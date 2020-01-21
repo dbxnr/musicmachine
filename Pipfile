@@ -9,6 +9,7 @@ requests = "*"
 toml = "*"
 lxml = "*"
 miniaudio = "*"
+tqdm = "*"
 
 [dev-packages]
 mypy = "*"

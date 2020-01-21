@@ -20,7 +20,7 @@ class Explorer:
 
         self.track = {'track_name': '',
                       'track_url': '',
-                      'duration': '',
+                      'duration': 0.0,
                       'media_url': ''}
 
         self.setup()
@@ -103,6 +103,10 @@ class Explorer:
         # This could be refactored out, a random media url
         # be grabbed from the array of tracks on the album page
 
+
+        # The track may not contain the selected_tag,
+        # BC seems to group artists by all tags used.
+
         r = requests.get(self.album['album_url'])
         s = BeautifulSoup(r.content, 'lxml')
 
@@ -119,17 +123,17 @@ class Explorer:
             # Sometimes a url will be /album/ or /track/
             # regex to fix this!
             self.track['track_url'] = self.artist['band_url'] + self.random_selection(tracks)
-            self.get_media_url(s)
+            self.get_media_data(s)
             return True
         else:
             print('Failure', self.artist['band_url'], self.album['album_url'])
             return self.get_random_track()
 
-    def get_media_url(self, request) -> bool:
+    def get_media_data(self, request) -> bool:
         s = BeautifulSoup(request.text, 'lxml')
         script = s.find('script', type='text/javascript').get_text()
 
         # Kind of hacky, regex could be improved
         self.track['media_url'] = re.search(r'(?:"mp3-128":).[^"]+', script).group()[11:]
-
+        self.track['duration'] = float(re.search(r'(?:"duration":).[^,]+', script).group()[11:])
         return True

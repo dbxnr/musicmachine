@@ -2,7 +2,6 @@ BASE_URL = 'https://bandcamp.com/'
 TAGS = 'tag/'
 DIG_DEEPER = 'https://bandcamp.com/api/hub/2/dig_deeper'
 
-REFERRER = 'https://bandcamp.com/tag/drone?tab=all_releases'
 BODY = '{"filters":{"format":"all","location":0,"sort":"pop",'
 
 ALBUM_SELECTOR = 'li.music-grid-item > a[href]'

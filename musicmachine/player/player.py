@@ -1,10 +1,12 @@
 import miniaudio
 import requests
+import time
 
 
 class Player:
-    def __init__(self, stream):
+    def __init__(self, stream, duration):
         self.stream = stream
+        self.duration = duration
 
     def play(self):
         s = requests.get(self.stream, stream=True).raw
@@ -15,5 +17,14 @@ class Player:
         stream = miniaudio.stream_any(source=s, source_format=miniaudio.FileFormat.MP3, nchannels=channels, sample_rate=sample_rate)
         device = miniaudio.PlaybackDevice()
         device.start(stream)
-        input("Audio file playing in the background. Enter to stop playback: ")
+        time.sleep(self.duration)
+        #input("Audio file playing in the background. Enter to stop playback: ")
         device.close()
+
+
+class Display:
+    def __init__(self, tag, artist, album, track):
+        self.tag = tag
+        self.artist = artist
+        self.album = album
+        self.track = track
