@@ -18,7 +18,6 @@ class Player:
         device = miniaudio.PlaybackDevice()
         device.start(stream)
         time.sleep(self.duration)
-        #input("Audio file playing in the background. Enter to stop playback: ")
         device.close()
 
 

@@ -1,7 +1,7 @@
 import json
 import random
 import re
-from typing import Callable, List, Union
+from typing import Callable, List, Union, Dict
 
 import requests
 
@@ -15,13 +15,13 @@ class Explorer:
         self.tags = set()
         self.selected_tag = ''
         self.artist = {}
-        self.album = {'album_name': '',
-                      'album_url': ''}
+        self.album: Dict[str] = {'album_name': '',
+                                 'album_url': ''}
 
-        self.track = {'track_name': '',
-                      'track_url': '',
-                      'duration': 0.0,
-                      'media_url': ''}
+        self.track: Dict[Union[str, float]] = {'track_name': '',
+                                               'track_url': '',
+                                               'duration': 0.0,
+                                               'media_url': ''}
 
         self.setup()
 
@@ -62,21 +62,21 @@ class Explorer:
 
     @staticmethod
     def random_selection(choices) -> tuple:
-        choice = random.choice(tuple(choices))
+        choice: str = random.choice(tuple(choices))
         return choice
 
     def get_random_artist(self, tag) -> Union[bool, Callable]:
-        page = random.randint(1, 25)
-        body = '"tags":["' + tag + '"]},"page":' + str(page) + '}'
+        page: int = random.randint(1, 25)
+        body: str = '"tags":["' + tag + '"]},"page":' + str(page) + '}'
 
         r = requests.post(url=self.config['DIG_DEEPER'],
                           headers=self.config['HEADERS'],
                           data=self.config['BODY']+body,
                           stream=True)
 
-        data = json.loads(r.text)
+        data: str = json.loads(r.text)
         try:
-            artist = data['items'][random.randint(0, len(data['items']))]
+            artist: str = data['items'][random.randint(0, len(data['items']))]
             self.artist = artist
             return True
 
