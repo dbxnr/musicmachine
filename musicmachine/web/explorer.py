@@ -1,6 +1,8 @@
 import json
 import random
 import re
+
+from datetime import datetime
 from typing import Callable, List, Union, Dict
 
 import requests
@@ -33,6 +35,15 @@ class Explorer:
         self.get_random_album()
         self.get_random_track()
 
+    @staticmethod
+    def is_it_christmas() -> bool:
+        return datetime.now().month == 11 | datetime.now().month == 11
+
+    @staticmethod
+    def random_selection(choices) -> tuple:
+        choice: str = random.choice(tuple(choices))
+        return choice
+
     def get_tags(self) -> bool:
         tags: List[str] = []
         r = requests.get(self.config['BASE_URL']+self.config['TAGS'])
@@ -53,17 +64,15 @@ class Explorer:
         Handler for some bad data that could be
         removed earlier in the pipeline.
         """
+        # Add a check for Christmas period, exclude tag based on that
         try:
             self.tags.remove('view-all')
             self.tags.remove('')
+            if not self.is_it_christmas():
+                self.tags.remove('christmas')
             return True
         except KeyError:
             return False
-
-    @staticmethod
-    def random_selection(choices) -> tuple:
-        choice: str = random.choice(tuple(choices))
-        return choice
 
     def get_random_artist(self, tag) -> Union[bool, Callable]:
         page: int = random.randint(1, 25)
@@ -103,7 +112,6 @@ class Explorer:
         # This could be refactored out, a random media url
         # be grabbed from the array of tracks on the album page
 
-
         # The track may not contain the selected_tag,
         # BC seems to group artists by all tags used.
 
@@ -126,8 +134,9 @@ class Explorer:
             self.get_media_data(s)
             return True
         else:
+            # Pretty serious bug, needs to be investigated
             print('Failure', self.artist['band_url'], self.album['album_url'])
-            return self.get_random_track()
+            return self.setup()
 
     def get_media_data(self, request) -> bool:
         s = BeautifulSoup(request.text, 'lxml')

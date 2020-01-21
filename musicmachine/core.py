@@ -1,7 +1,7 @@
 import toml
 
 
-class BandcampRadio:
+class MusicMachine:
 
     @property
     def config(self):
