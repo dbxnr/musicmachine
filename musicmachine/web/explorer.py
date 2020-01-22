@@ -136,7 +136,6 @@ class Explorer:
             # Sometimes a url will be /album/ or /track/
             # regex to fix this!
             self.track['track_url'] = self.artist['band_url'] + self.random_selection(tracks)
-            print(self.track['track_url'])
             self.get_media_data(s)
             return True
         else:
@@ -147,22 +146,19 @@ class Explorer:
     def get_media_data(self, soup) -> bool:
         s = soup
 
-        track_name_selector = s.select(self.config['TRACK_NAME_SELECTOR'])
-        script = s.find('script', type='text/javascript').get_text()
-
-
-        try:
-            self.track['track_name'] = track_name_selector[0].string
-
-        except Exception as e:
-            print('track name error', e)
-            pass
         # Kind of hacky, regex could be improved
         try:
-            data = re.search(r'(trackinfo:)(.[^\]]+])', s.get_text()).group()[11:]
-            print(data)
-            self.track['media_url'] = re.search(r'(?:"mp3-128":).[^"]+', s.get_text()).group()[11:]
-            self.track['duration'] = float(re.search(r'(?:"duration":).[^,]+', s.get_text()).group()[11:])
+            data = json.loads(re.search(r'(trackinfo:)(.[^\]]+])',
+                                        s.get_text())
+                              .group()[11:])
+            track = self.random_selection(data)
+
+            self.track['track_url']: str = self.artist['band_url'] + track['title_link']
+            self.track['media_url']: str = track['file']['mp3-128']
+            self.track['duration']: float = float(track['duration'])
+            self.track['track_name']: str = track['title']
+            print(self.track)
+
         except Exception as e:
             print('Get media error', e)
             return self.setup()
