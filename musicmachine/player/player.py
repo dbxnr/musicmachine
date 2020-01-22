@@ -3,6 +3,10 @@ import requests
 import time
 
 
+import warnings
+warnings.filterwarnings("ignore")
+
+
 class Player:
     def __init__(self, stream, duration):
         self.stream = stream
@@ -20,15 +24,6 @@ class Player:
                                       sample_rate=sample_rate)
         device = miniaudio.PlaybackDevice()
         device.start(stream)
-        # Crossfade here possibly?
         time.sleep(self.duration+1)
         device.close()
         return True
-
-
-class Display:
-    def __init__(self, tag, artist, album, track):
-        self.tag = tag
-        self.artist = artist
-        self.album = album
-        self.track = track

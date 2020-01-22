@@ -75,7 +75,7 @@ class Explorer:
 
     def get_random_artist(self, tag) -> Union[bool, Callable]:
         # This could be a user param, popularity range(x,y)
-        page: int = random.randint(1, 45)
+        page: int = random.randint(1, 35)
         body: str = '"tags":["' + tag + '"]},"page":' + str(page) + '}'
 
         r = requests.post(url=self.config['DIG_DEEPER'],
@@ -90,13 +90,16 @@ class Explorer:
             return True
 
         except Exception as e:
-            print(f'Still choosing from {self.selected_tag}')
+            print(f'Still choosing from {self.selected_tag}', e)
             return self.get_random_artist(self.selected_tag)
 
     def get_random_album(self) -> Union[bool, callable]:
-        r = requests.get(self.artist['band_url']+'/music/')
-        s = BeautifulSoup(r.content, 'lxml')
+        r = requests.get(self.artist['band_url']+'/music/',
+                         headers=self.config['HEADERS'],
+                         stream=True)
+        s = BeautifulSoup(r.text, 'lxml')
 
+        print(s.content)
         albums = list([a['href'] for a in s.select(self.config['ALBUM_SELECTOR'])])
 
         if len(albums) > 0:
@@ -116,9 +119,10 @@ class Explorer:
         # The track may not contain the selected_tag,
         # BC seems to group artists by all tags used.
 
-        r = requests.get(self.album['album_url'])
+        r = requests.get(self.album['album_url'],
+                         headers=self.config['HEADERS'],
+                         stream=True)
         s = BeautifulSoup(r.content, 'lxml')
-
         album_selector = s.select(self.config['ALBUM_NAME_SELECTOR'])
 
         try:
@@ -132,6 +136,7 @@ class Explorer:
             # Sometimes a url will be /album/ or /track/
             # regex to fix this!
             self.track['track_url'] = self.artist['band_url'] + self.random_selection(tracks)
+            print(self.track['track_url'])
             self.get_media_data(s)
             return True
         else:
@@ -139,16 +144,27 @@ class Explorer:
             print('Failure', self.artist['band_url'], self.album['album_url'])
             return self.setup()
 
-    def get_media_data(self, request) -> bool:
-        s = BeautifulSoup(request.text, 'lxml')
+    def get_media_data(self, soup) -> bool:
+        s = soup
+
+        track_name_selector = s.select(self.config['TRACK_NAME_SELECTOR'])
         script = s.find('script', type='text/javascript').get_text()
 
+
+        try:
+            self.track['track_name'] = track_name_selector[0].string
+
+        except Exception as e:
+            print('track name error', e)
+            pass
         # Kind of hacky, regex could be improved
         try:
-            self.track['media_url'] = re.search(r'(?:"mp3-128":).[^"]+', script).group()[11:]
-            self.track['duration'] = float(re.search(r'(?:"duration":).[^,]+', script).group()[11:])
+            data = re.search(r'(trackinfo:)(.[^\]]+])', s.get_text()).group()[11:]
+            print(data)
+            self.track['media_url'] = re.search(r'(?:"mp3-128":).[^"]+', s.get_text()).group()[11:]
+            self.track['duration'] = float(re.search(r'(?:"duration":).[^,]+', s.get_text()).group()[11:])
         except Exception as e:
-            print(e)
+            print('Get media error', e)
             return self.setup()
 
         return True
