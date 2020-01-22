@@ -34,7 +34,6 @@ if __name__ == "__main__":
                         x.queue[0].artist['band_name'],
                         x.queue[0].album['album_name'],
                         x.queue[0].track['track_name'])
-            print(vars(d))
             d = threading.Thread(target=d.main)
             y.start()
             z.start()
