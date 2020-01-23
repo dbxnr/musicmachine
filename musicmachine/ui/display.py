@@ -16,6 +16,8 @@ class Display:
         self.duration: float = ''
         self.cursor_pos: tuple = ()
 
+        print('\n')
+
         if not self.cursor_pos:
             self.cursor_pos = self.getpos()
 
@@ -30,7 +32,7 @@ class Display:
 
     def main(self):
         # Clear line
-        sys.stdout.write('\x1b[2K\r',) 
+        sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H\033[K")
         # Put cursor in position and print track info
         sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0HArtist:\t{self.artist}\t\tAlbum:\t{self.album}\t\tTrack:\t{self.track}\r")
         # Draw progress bar

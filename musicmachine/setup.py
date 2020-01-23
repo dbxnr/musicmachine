@@ -6,8 +6,8 @@ from web.explorer import Explorer
 from player.player import Player
 from ui.display import Display
 
-
 x = MusicMachine()
+d = Display()
 
 
 def build_queue():
@@ -16,7 +16,6 @@ def build_queue():
 
 
 if __name__ == "__main__":
-    d = Display()
     while True:
         if len(x.queue) == 0:
             x.queue.append(Explorer(x))
