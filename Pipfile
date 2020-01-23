@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 beautifulsoup4 = "*"
-requests = "*"
+requests = ">=2.22.0"
 toml = "*"
 lxml = "*"
 miniaudio = "*"

@@ -1,19 +1,16 @@
 import time
-
+from tqdm import tqdm, trange
 
 class Display:
-    def __init__(self, tag, artist, album, track):
+    def __init__(self, tag, artist, album, track, duration):
         self.tag = tag
         self.artist = artist
         self.album = album
         self.track = track
-
-    def write_info(self):
-        self.stdscr = self.addstr(0, 0, self.tag)
-        self.stdscr = self.addstr(2, 0, self.artist)
-        self.stdscr = self.addstr(4, 0, self.album)
-        self.stdscr = self.addstr(4, 0, self.track)
+        self.duration = duration
 
     def main(self):
-        for x in (self.artist, self.album, self.track):
-            print(x + '\n')
+
+        print(f"Artist:\t{self.artist}\t\tAlbum:\t{self.album}\t\tTrack:\t{self.track}\r")
+        for i in trange(int(self.duration)):
+            time.sleep(1)
