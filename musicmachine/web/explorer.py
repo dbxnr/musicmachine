@@ -116,8 +116,14 @@ class Explorer:
         # The track may not contain the selected_tag,
         # BC seems to group artists by all tags used.
 
-        r = requests.get(self.album['album_url'],
-                         headers=self.config['HEADERS'])
+
+        # Requests fails quite often here - should be investigated
+        # " Max retries exceeded with url "
+        try:
+            r = requests.get(self.album['album_url'],
+                             headers=self.config['HEADERS'])
+        except requests.exceptions.ConnectionError:
+            return self.get_random_track()
 
         s = BeautifulSoup(r.content, 'lxml')
         album_selector = s.select(self.config['ALBUM_NAME_SELECTOR'])
@@ -160,4 +166,7 @@ class Explorer:
             #print('Get media error', e)
             return self.setup()
 
-        return True
+        if self.track['media_url'].startswith('http'):
+            return True
+        else:
+            return self.setup()

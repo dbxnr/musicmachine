@@ -10,7 +10,12 @@ class Player:
     def __init__(self, stream, duration):
         self.stream: str = stream
         self.duration: float = duration
-        self.media: HttpResponse = requests.get(self.stream, stream=True).raw
+
+        try:
+            self.media: HttpResponse = requests.get(self.stream, stream=True).raw
+        except requests.exceptions.MissingSchema:
+            print(self.stream)
+            return False
 
     def play(self) -> bool:
         channels: int = 2
@@ -23,7 +28,7 @@ class Player:
                                       sample_rate=sample_rate)
 
         device.start(stream)
-        time.sleep(2)
+        time.sleep(self.duration)
             
         device.close()
         return True

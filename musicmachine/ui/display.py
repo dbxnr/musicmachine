@@ -34,10 +34,10 @@ class Display:
         # Clear line
         sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H\033[K")
         # Put cursor in position and print track info
-        sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0HArtist:\t{self.artist}\t\tAlbum:\t{self.album}\t\tTrack:\t{self.track}\r")
+        sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H👩‍🎤  {self.artist}\t💿  {self.album}\t🎵  {self.track}\r")
         # Draw progress bar
         for i in trange(int(self.duration)):
-            time.sleep(0.001)
+            time.sleep(1)
 
     @staticmethod
     def getpos():
