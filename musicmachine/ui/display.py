@@ -3,21 +3,39 @@ import termios
 import tty
 import sys
 import time
+
 from tqdm import tqdm, trange
+from tqdm.utils import _unicode
 
 class Display:
-    def __init__(self, tag, artist, album, track, duration):
-        self.tag = tag
-        self.artist = artist
-        self.album = album
-        self.track = track
-        self.duration = duration
+    def __init__(self):
+        self.tag: str = ''
+        self.artist: str = ''
+        self.album: str = ''
+        self.track: str = ''
+        self.duration: float = ''
+        self.cursor_pos: tuple = ()
+
+        if not self.cursor_pos:
+            self.cursor_pos = self.getpos()
+
+        tqdm.status_printer = self.status_printer
+
+    def set_track_info(self, tag, artist, album, track, duration):
+        self.tag: str = tag
+        self.artist: str = artist
+        self.album: str = album
+        self.track: str = track
+        self.duration: float = duration
 
     def main(self):
-
-        print(f"Artist:\t{self.artist}\t\tAlbum:\t{self.album}\t\tTrack:\t{self.track}\r")
+        # Clear line
+        sys.stdout.write('\x1b[2K\r',) 
+        # Put cursor in position and print track info
+        sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0HArtist:\t{self.artist}\t\tAlbum:\t{self.album}\t\tTrack:\t{self.track}\r")
+        # Draw progress bar
         for i in trange(int(self.duration)):
-            time.sleep(1)
+            time.sleep(0.001)
 
     @staticmethod
     def getpos():
@@ -49,3 +67,26 @@ class Display:
             return None
 
         return (int(groups[0]), int(groups[1]))
+
+    # Override tqdm.status_printer()
+    def status_printer(self, file):
+        """
+        Manage the printing and in-place updating of a line of characters.
+        Note that if the string is longer than a line, then in-place
+        updating may not work (it will print a new line at each refresh).
+        """
+        fp = file
+        fp_flush = getattr(fp, 'flush', lambda: None)  # pragma: no cover
+
+        def fp_write(s):
+            fp.write(_unicode(s))
+            fp_flush()
+
+        last_len = [0]
+
+        def print_status(s):
+            len_s = len(s)
+            fp_write(f"\033[{self.cursor_pos[0]-1};0H" + s + (' ' * max(last_len[0] - len_s, 0)))
+            last_len[0] = len_s
+
+        return print_status

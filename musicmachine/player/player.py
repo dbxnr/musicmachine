@@ -11,7 +11,6 @@ class Player:
         self.stream: str = stream
         self.duration: float = duration
         self.media: HttpResponse = requests.get(self.stream, stream=True).raw
-        self.run: bool = True
 
     def play(self) -> bool:
         channels: int = 2
@@ -24,8 +23,7 @@ class Player:
                                       sample_rate=sample_rate)
 
         device.start(stream)
-        time.sleep(self.duration)
-        self.run = False
+        time.sleep(2)
             
         device.close()
         return True
