@@ -57,7 +57,10 @@ class Explorer:
                         .splitlines())
         self.tags = set(tags)
 
-        return True
+        if self.tags:
+            return True
+        else:
+            return self.setup()
 
     def clean_tags(self) -> bool:
         """

@@ -23,24 +23,27 @@ class Display:
 
         tqdm.status_printer = self.status_printer
 
-    def set_track_info(self, tag, artist, album, track, duration):
+    def set_track_info(self, tag, artist, album, track, duration) -> None:
         self.tag: str = tag
         self.artist: str = artist
         self.album: str = album
         self.track: str = track
         self.duration: float = duration
 
-    def main(self):
+    def main(self) -> None:
         # Clear line
         sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H\033[K")
         # Put cursor in position and print track info
         sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H👩‍🎤  {self.artist}\t💿  {self.album}\t🎵  {self.track}\r")
         # Draw progress bar
-        for i in trange(int(self.duration)):
-            time.sleep(1)
+        for i in trange(int(self.duration), 
+                            bar_format='{desc}: {percentage:3.0f}% | {bar} | [{elapsed}<{remaining}]',
+                            ascii = [' ', '▶', '▷', '▹', '▸'],
+                            mininterval=0.05):
+                time.sleep(1)
 
     @staticmethod
-    def getpos():
+    def getpos() -> None:
         # From https://stackoverflow.com/a/46677968
 
         buf = ""
@@ -71,7 +74,7 @@ class Display:
         return (int(groups[0]), int(groups[1]))
 
     # Override tqdm.status_printer()
-    def status_printer(self, file):
+    def status_printer(self, file) -> tuple:
         """
         Manage the printing and in-place updating of a line of characters.
         Note that if the string is longer than a line, then in-place
