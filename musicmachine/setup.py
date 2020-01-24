@@ -6,7 +6,7 @@ from web.explorer import Explorer
 from player.player import Player
 from ui.display import Display
 
-q_length = 3
+q_length = 1
 
 
 def build_queue(num):
@@ -19,32 +19,28 @@ if __name__ == "__main__":
     d = Display()
 
     print('Buffering tracks...')
-    try:
-        while True:
-            if len(x.queue) == 0:
-                # Could add a progress bar here
-                build_queue(q_length)
-            else:
-                z = threading.Thread(target=Player(x.queue[0]
-                                                   .track['media_url'],
-                                                   x.queue[0]
-                                                   .track['duration'])
-                                     .play)
-                y = threading.Thread(target=build_queue, args=([q_length]))
-                d.set_track_info(
-                    x.queue[0].selected_tag,
-                    x.queue[0].artist['band_name'],
-                    x.queue[0].album['album_name'],
-                    x.queue[0].track['track_name'],
-                    x.queue[0].track['duration']
-                    )
-                dt = threading.Thread(target=d.main)
-                y.start()
-                z.start()
-                dt.start()
-                z.join()
+    while True:
+        if len(x.queue) == 0:
+            build_queue(q_length)
+        else:
+            z = threading.Thread(target=Player(x.queue[0]
+                                               .track['media_url'],
+                                               x.queue[0]
+                                               .track['duration'])
+                                               .play)
+            y = threading.Thread(target=build_queue, args=([q_length]))
+            d.set_track_info(
+                x.queue[0].selected_tag,
+                x.queue[0].artist['band_name'],
+                x.queue[0].album['album_name'],
+                x.queue[0].track['track_name'],
+                x.queue[0].track['duration']
+                )
+            dt = threading.Thread(target=d.main)
 
-                x.queue.pop(0)
-    except KeyboardInterrupt:
-        print('')
-        pass
+            dt.start()
+            y.start()
+            z.start()
+            z.join()
+
+            x.queue.pop(0)

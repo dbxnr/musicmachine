@@ -34,10 +34,10 @@ class Display:
         # Clear line
         sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H\033[K")
         # Put cursor in position and print track info
-        sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H  {self.artist:<30} {self.album:^30} {self.track:>30}\r")
-        # Draw progress bar
+        sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H  {self.artist:<25} {self.album:<30} {self.track:<30}  \r")
+
         for i in trange(int(self.duration), 
-                            bar_format='[{percentage:3.0f}%] {bar} [{remaining}] ',
+                            bar_format='  [{percentage:3.0f}%] {bar} | 👍  [{remaining}]  ',
                             ascii = [' ', '▶', '▷', '▹', '▸'],
                             mininterval=0.05):
                 time.sleep(1)
@@ -95,3 +95,15 @@ class Display:
             last_len[0] = len_s
 
         return print_status
+
+    @staticmethod
+    def getch():
+        # From https://stackoverflow.com/a/47069232
+       fd = sys.stdin.fileno()
+       old_settings = termios.tcgetattr(fd)
+       try:
+          tty.setraw(fd)
+          ch = sys.stdin.read(1)
+       finally:
+          termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+       return ch
