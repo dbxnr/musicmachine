@@ -1,8 +1,8 @@
 import re
-import termios
-import tty
 import sys
+import termios
 import time
+import tty
 
 from tqdm import tqdm, trange
 from tqdm.utils import _unicode
@@ -25,19 +25,19 @@ class Display:
 
     def set_track_info(self, tag, artist, album, track, duration) -> None:
         self.tag: str = tag
-        self.artist: str = artist
-        self.album: str = album
-        self.track: str = track
+        self.artist: str = '👩‍🎤  ' + artist
+        self.album: str = '💿  ' + album
+        self.track: str = '🎵  ' + track
         self.duration: float = duration
 
     def main(self) -> None:
         # Clear line
         sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H\033[K")
         # Put cursor in position and print track info
-        sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H👩‍🎤  {self.artist}\t💿  {self.album}\t🎵  {self.track}\r")
+        sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H  {self.artist:<30} {self.album:^30} {self.track:>30}\r")
         # Draw progress bar
         for i in trange(int(self.duration), 
-                            bar_format='{desc}: {percentage:3.0f}% | {bar} | [{elapsed}<{remaining}]',
+                            bar_format='[{percentage:3.0f}%] {bar} [{remaining}] ',
                             ascii = [' ', '▶', '▷', '▹', '▸'],
                             mininterval=0.05):
                 time.sleep(1)
