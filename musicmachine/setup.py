@@ -8,9 +8,6 @@ from ui.display import Display
 
 q_length = 3
 
-x = MusicMachine()
-d = Display()
-
 
 def build_queue(num):
     while len(x.queue) < num:
@@ -18,29 +15,36 @@ def build_queue(num):
 
 
 if __name__ == "__main__":
-    while True:
-        if len(x.queue) == 0:
-            # Could add a progress bar here
-            print('Buffering tracks...')
-            build_queue(q_length)
-        else:
-            z = threading.Thread(target=Player(x.queue[0]
-                                               .track['media_url'],
-                                               x.queue[0]
-                                               .track['duration'])
-                                 .play)
-            y = threading.Thread(target=build_queue, args=([q_length]))
-            d.set_track_info(
-                x.queue[0].selected_tag,
-                x.queue[0].artist['band_name'],
-                x.queue[0].album['album_name'],
-                x.queue[0].track['track_name'],
-                x.queue[0].track['duration']
-                )
-            dt = threading.Thread(target=d.main)
-            y.start()
-            z.start()
-            dt.start()
-            z.join()
+    x = MusicMachine()
+    d = Display()
 
-            x.queue.pop(0)
+    print('Buffering tracks...')
+    try:
+        while True:
+            if len(x.queue) == 0:
+                # Could add a progress bar here
+                build_queue(q_length)
+            else:
+                z = threading.Thread(target=Player(x.queue[0]
+                                                   .track['media_url'],
+                                                   x.queue[0]
+                                                   .track['duration'])
+                                     .play)
+                y = threading.Thread(target=build_queue, args=([q_length]))
+                d.set_track_info(
+                    x.queue[0].selected_tag,
+                    x.queue[0].artist['band_name'],
+                    x.queue[0].album['album_name'],
+                    x.queue[0].track['track_name'],
+                    x.queue[0].track['duration']
+                    )
+                dt = threading.Thread(target=d.main)
+                y.start()
+                z.start()
+                dt.start()
+                z.join()
+
+                x.queue.pop(0)
+    except KeyboardInterrupt:
+        print('')
+        pass
