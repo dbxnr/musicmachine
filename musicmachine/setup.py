@@ -1,3 +1,4 @@
+import multiprocessing
 import threading
 
 from core import MusicMachine
@@ -5,7 +6,7 @@ from web.explorer import Explorer
 from player.player import Player
 from ui.display import Display
 
-q_length = 1
+q_length = 3
 
 
 def build_queue(num):
@@ -17,17 +18,19 @@ if __name__ == "__main__":
     x = MusicMachine()
     d = Display()
 
-    print('Buffering tracks... ')
+    print('Buffering tracks...')
     while d.running:
         if len(x.queue) == 0:
-            build_queue(q_length)
+            for i in range(q_length):
+                p = threading.Thread(target=build_queue(1))
+                p.start()
         else:
-            z = threading.Thread(target=Player(x.queue[0]
+            z = multiprocessing.Process(target=Player(x.queue[0]
                                                .track['media_url'],
                                                x.queue[0]
                                                .track['duration'])
                                  .play)
-            y = threading.Thread(target=build_queue, args=([q_length]))
+            y = multiprocessing.Process(target=build_queue, args=([q_length]))
             d.set_track_info(
                 x.queue[0].selected_tag,
                 x.queue[0].artist['band_name'],
@@ -35,9 +38,9 @@ if __name__ == "__main__":
                 x.queue[0].track['track_name'],
                 x.queue[0].track['duration'],
                 )
-            dt = threading.Thread(target=d.main)
-            user_input = threading.Thread(target=d.detect_keypress)
-            user_input.start()
+            dt = multiprocessing.Process(target=d.main)
+            # user_input = threading.Thread(target=d.detect_keypress)
+            # user_input.start()
             dt.start()
             y.start()
             z.start()
