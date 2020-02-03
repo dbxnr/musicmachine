@@ -1,5 +1,4 @@
 import threading
-import time
 
 from core import MusicMachine
 from web.explorer import Explorer
@@ -27,7 +26,7 @@ if __name__ == "__main__":
                                                .track['media_url'],
                                                x.queue[0]
                                                .track['duration'])
-                                               .play)
+                                 .play)
             y = threading.Thread(target=build_queue, args=([q_length]))
             d.set_track_info(
                 x.queue[0].selected_tag,

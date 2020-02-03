@@ -3,15 +3,10 @@ import requests
 import time
 
 
-import warnings
-
-
 class Player:
     def __init__(self, stream, duration):
         self.stream: str = stream
         self.duration: float = duration
-        
-
 
     def play(self) -> bool:
         try:

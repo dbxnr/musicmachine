@@ -7,13 +7,14 @@ import tty
 from tqdm import tqdm, trange
 from tqdm.utils import _unicode
 
+
 class Display:
     def __init__(self):
         self.tag: str = ''
         self.artist: str = ''
         self.album: str = ''
         self.track: str = ''
-        self.duration: float = ''
+        self.duration: float = 0.0
         self.cursor_pos: tuple = ()
 
         print('\n')
@@ -40,10 +41,10 @@ class Display:
                             bar_format='  [{percentage:3.0f}%] {bar} | 👍  [{remaining}]  ',
                             ascii = [' ', '▶', '▷', '▹', '▸'],
                             mininterval=0.05):
-                time.sleep(1)
+            time.sleep(1)
 
     @staticmethod
-    def getpos() -> None:
+    def getpos() -> tuple:
         # From https://stackoverflow.com/a/46677968
 
         buf = ""
@@ -74,7 +75,7 @@ class Display:
         return (int(groups[0]), int(groups[1]))
 
     # Override tqdm.status_printer()
-    def status_printer(self, file) -> tuple:
+    def status_printer(self, file):
         """
         Manage the printing and in-place updating of a line of characters.
         Note that if the string is longer than a line, then in-place
@@ -98,12 +99,12 @@ class Display:
 
     @staticmethod
     def getch():
-        # From https://stackoverflow.com/a/47069232
-       fd = sys.stdin.fileno()
-       old_settings = termios.tcgetattr(fd)
-       try:
-          tty.setraw(fd)
-          ch = sys.stdin.read(1)
-       finally:
-          termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-       return ch
+        # Adapted from https://stackoverflow.com/a/47069232
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch

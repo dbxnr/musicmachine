@@ -93,7 +93,6 @@ class Explorer:
             return True
 
         except Exception as e:
-            #print(f'Still choosing from {self.selected_tag}', e)
             return self.get_random_artist(self.selected_tag)
 
     def get_random_album(self) -> Union[bool, callable]:
@@ -109,7 +108,6 @@ class Explorer:
             return True
         else:
             # Pretty serious bug, needs to be investigate
-            #print(f"Perusing back catalogues of {self.artist['band_url']}...")
             return self.setup()
 
     def get_random_track(self) -> Union[bool, callable]:
@@ -135,7 +133,6 @@ class Explorer:
             self.album['album_name'] = album_selector[0].string.strip()
         except Exception as e:
             return self.get_random_album()
-            #print(e)
 
         tracks = list(a['href'] for a in s.select(self.config['TRACK_SELECTOR']))
 
@@ -147,7 +144,6 @@ class Explorer:
             return True
         else:
             # Pretty serious bug, needs to be investigated
-            #print('Failure', self.artist['band_url'], self.album['album_url'])
             return self.get_random_album()
 
     def get_media_data(self, soup) -> bool:
@@ -166,7 +162,6 @@ class Explorer:
             self.track['track_name']: str = track['title']
 
         except Exception as e:
-            #print('Get media error', e)
             return self.setup()
 
         if self.track['media_url'].startswith('http'):
