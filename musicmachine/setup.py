@@ -17,8 +17,8 @@ if __name__ == "__main__":
     x = MusicMachine()
     d = Display()
 
-    print('Buffering tracks...')
-    while True:
+    print('Buffering tracks... ')
+    while d.running:
         if len(x.queue) == 0:
             build_queue(q_length)
         else:
@@ -33,10 +33,11 @@ if __name__ == "__main__":
                 x.queue[0].artist['band_name'],
                 x.queue[0].album['album_name'],
                 x.queue[0].track['track_name'],
-                x.queue[0].track['duration']
+                x.queue[0].track['duration'],
                 )
             dt = threading.Thread(target=d.main)
-
+            user_input = threading.Thread(target=d.detect_keypress)
+            user_input.start()
             dt.start()
             y.start()
             z.start()

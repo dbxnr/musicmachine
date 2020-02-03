@@ -3,6 +3,7 @@ import sys
 import termios
 import time
 import tty
+import _thread
 
 from tqdm import tqdm, trange
 from tqdm.utils import _unicode
@@ -16,6 +17,8 @@ class Display:
         self.track: str = ''
         self.duration: float = 0.0
         self.cursor_pos: tuple = ()
+        self.like: bool = False
+        self.running: bool = True
 
         print('\n')
 
@@ -25,11 +28,23 @@ class Display:
         tqdm.status_printer = self.status_printer
 
     def set_track_info(self, tag, artist, album, track, duration) -> None:
-        self.tag: str = tag
-        self.artist: str = '👩‍🎤  ' + artist
-        self.album: str = '💿  ' + album
-        self.track: str = '🎵  ' + track
-        self.duration: float = duration
+        self.tag = tag
+        self.artist = '👩‍🎤  ' + artist
+        self.album = '💿  ' + album
+        self.track = '🎵  ' + track
+        self.duration = duration
+        self.like = False
+
+    def detect_keypress(self):
+        """
+        Checks keypress and updates UI accordingly.
+        """
+        while True:
+            c = self.getch()
+            if c == 'y' or c == ord('y'):
+                self.like = True
+            elif c == ord('q') or c == 'q':
+                self.running = False
 
     def main(self) -> None:
         # Clear line
@@ -37,10 +52,10 @@ class Display:
         # Put cursor in position and print track info
         sys.stdout.write(f"\033[{self.cursor_pos[0]-2};0H  {self.artist:<25} {self.album:<30} {self.track:<30}  \r")
 
-        for i in trange(int(self.duration), 
-                            bar_format='  [{percentage:3.0f}%] {bar} | 👍  [{remaining}]  ',
-                            ascii = [' ', '▶', '▷', '▹', '▸'],
-                            mininterval=0.05):
+        for i in trange(int(self.duration),
+                        bar_format='  [{percentage:3.0f}%] {bar} | [{remaining}]  ',
+                        ascii=[' ', '▶', '▷', '▹', '▸'],
+                        mininterval=0.05):
             time.sleep(1)
 
     @staticmethod
@@ -72,7 +87,7 @@ class Display:
         except AttributeError:
             return None
 
-        return (int(groups[0]), int(groups[1]))
+        return int(groups[0]), int(groups[1])
 
     # Override tqdm.status_printer()
     def status_printer(self, file):
