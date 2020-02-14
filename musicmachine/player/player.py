@@ -18,10 +18,12 @@ class Player:
         sample_rate: int = 44100
         device = miniaudio.PlaybackDevice()
 
-        stream = miniaudio.stream_any(source=media,
-                                      source_format=miniaudio.FileFormat.MP3,
-                                      nchannels=channels,
-                                      sample_rate=sample_rate)
+        stream = miniaudio.stream_any(
+            source=media,
+            source_format=miniaudio.FileFormat.MP3,
+            nchannels=channels,
+            sample_rate=sample_rate,
+        )
 
         device.start(stream)
         time.sleep(self.duration)
